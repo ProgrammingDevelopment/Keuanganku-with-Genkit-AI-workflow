@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FinancialEntry } from '@/lib/types';
@@ -39,8 +40,8 @@ export function EntryList({ entries, onEdit, onDelete }: EntryListProps) {
             <TableRow key={entry.id}>
               <TableCell>
                 {entry.type === 'income' ? 
-                  <TrendingUp className="h-5 w-5 text-green-500" titleAccess='Pendapatan' /> : 
-                  <TrendingDown className="h-5 w-5 text-red-500" titleAccess='Pengeluaran' />}
+                  <TrendingUp className="h-5 w-5 text-green-500" title='Pendapatan' /> : 
+                  <TrendingDown className="h-5 w-5 text-red-500" title='Pengeluaran' />}
               </TableCell>
               <TableCell>{format(parseISO(entry.date), "dd MMM yyyy", { locale: indonesiaLocale })}</TableCell>
               <TableCell className="max-w-[200px] truncate">{entry.notes}</TableCell>
