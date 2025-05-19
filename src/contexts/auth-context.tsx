@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -41,8 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     // Mock API call
     await new Promise(resolve => setTimeout(resolve, 1000));
+    let mockUser: User | null = null;
+
     if (email === 'user@example.com' && pass === 'password') {
-      const mockUser: User = { id: '1', email: 'user@example.com', name: 'Demo User' };
+      mockUser = { id: '1', email: 'user@example.com', name: 'Demo User' };
+    } else if (email === 'admin@gmail.com' && pass === 'password') {
+      mockUser = { id: '2', email: 'admin@gmail.com', name: 'Admin User' };
+    }
+
+    if (mockUser) {
       setUser(mockUser);
       localStorage.setItem('keuanganku-user', JSON.stringify(mockUser));
       toast({ title: 'Login Successful', description: 'Welcome back!' });
@@ -61,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setUser(null);
     localStorage.removeItem('keuanganku-user');
-    toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+    toast({ title: 'Logged Out', description: 'You should be redirected to the login page.' });
     router.push(APP_ROUTES.LOGIN);
     setLoading(false);
   };
