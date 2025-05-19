@@ -48,7 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mockUser = { id: '1', email: 'user@example.com', name: 'Demo User' };
     } else if (email === 'admin@gmail.com' && pass === 'password') {
       mockUser = { id: '2', email: 'admin@gmail.com', name: 'Admin User' };
+    } else if (email === 'swandarutirtasandhika1@gmail.com' && pass === 'password') {
+      mockUser = { id: '3', email: 'swandarutirtasandhika1@gmail.com', name: 'Swandaru T S' };
     }
+
 
     if (mockUser) {
       setUser(mockUser);
