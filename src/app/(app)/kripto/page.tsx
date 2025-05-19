@@ -6,16 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Bitcoin, DollarSign, TrendingUp, Zap, RefreshCw, Bot, Loader2, Search, Coins } from "lucide-react";
+import { Bitcoin, DollarSign, TrendingUp, Zap, RefreshCw, Bot, Loader2, Search, Coins, BarChart3 } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { analyzeCryptocurrency, type AnalyzeCryptocurrencyInput } from '@/ai/flows/analyze-cryptocurrency-flow';
+import { getArkhamChartAction, type GetArkhamChartActionResult } from './actions'; // Impor server action
+import { CryptoChart } from '@/components/kripto/crypto-chart'; // Impor komponen chart
+import type { FormattedArkhamChartDataPoint, ArkhamChartDataPoint } from '@/services/arkham-service';
 import Image from 'next/image';
+import { format } from 'date-fns';
+import { id as indonesiaLocale } from 'date-fns/locale';
 
 interface CryptoDisplayInfo {
   id: string;
   name: string;
   symbol: string;
-  iconImage?: string; // URL for a proper logo if available
+  iconImage?: string;
   fallbackIcon: React.ElementType;
   mockPrice: string;
   dataAiHint: string;
@@ -30,34 +35,88 @@ const cryptoList: CryptoDisplayInfo[] = [
 ];
 
 export default function KriptoPage() {
-  const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
+  const [selectedCrypto, setSelectedCrypto] = useState<CryptoDisplayInfo | null>(null);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
   const [customCryptoName, setCustomCryptoName] = useState('');
   const { toast } = useToast();
 
-  const handleAnalyzeCrypto = async (cryptoName: string) => {
+  const [chartData, setChartData] = useState<FormattedArkhamChartDataPoint[] | null>(null);
+  const [isLoadingChart, setIsLoadingChart] = useState(false);
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  const formatChartData = (data: ArkhamChartDataPoint[]): FormattedArkhamChartDataPoint[] => {
+    return data.map(point => ({
+      date: format(new Date(point.timestamp), 'dd MMM', { locale: indonesiaLocale }), // Format tanggal pendek
+      price: point.price,
+    }));
+  };
+
+  const handleAnalyzeAndChartCrypto = async (crypto: CryptoDisplayInfo | { name: string, symbol: string }) => {
+    const cryptoName = crypto.name;
+    const cryptoSymbol = crypto.symbol;
+
     if (!cryptoName.trim()) {
       toast({ title: "Nama Kripto Kosong", description: "Harap masukkan nama mata uang kripto.", variant: "destructive" });
       return;
     }
-    setSelectedCrypto(cryptoName);
+    
+    setSelectedCrypto(crypto as CryptoDisplayInfo); // Simpan info kripto yang dipilih
     setIsLoadingAnalysis(true);
     setAnalysisResult(null);
+    setIsLoadingChart(true);
+    setChartData(null);
+    setChartError(null);
+
+    let aiAnalysisSuccessful = false;
+
     try {
+      // 1. Dapatkan Analisis AI
       const input: AnalyzeCryptocurrencyInput = { cryptocurrencyName: cryptoName };
       const result = await analyzeCryptocurrency(input);
       setAnalysisResult(result.analysis);
       toast({ title: `Analisis untuk ${cryptoName}`, description: "Analisis AI berhasil dimuat." });
+      aiAnalysisSuccessful = true;
     } catch (err) {
       console.error("Error fetching crypto analysis:", err);
       const errorMessage = err instanceof Error ? err.message : 'Gagal mengambil analisis mata uang kripto.';
-      toast({ title: 'Kesalahan Analisis', description: errorMessage, variant: 'destructive' });
-      setAnalysisResult(`Gagal memuat analisis untuk ${cryptoName}. Coba lagi nanti.`);
+      toast({ title: 'Kesalahan Analisis AI', description: errorMessage, variant: 'destructive' });
+      setAnalysisResult(`Gagal memuat analisis AI untuk ${cryptoName}.`);
     } finally {
       setIsLoadingAnalysis(false);
     }
+
+    // 2. Dapatkan Data Grafik (jika analisis AI berhasil atau sesuai kebutuhan)
+    // Kita akan tetap mencoba memuat grafik meskipun analisis AI gagal, agar pengguna tetap bisa melihat grafik.
+    try {
+      const chartResult: GetArkhamChartActionResult = await getArkhamChartAction(cryptoSymbol);
+      if (chartResult.success && chartResult.data) {
+        setChartData(formatChartData(chartResult.data));
+        toast({ title: `Grafik untuk ${cryptoName}`, description: "Data grafik berhasil dimuat." });
+      } else {
+        setChartError(chartResult.error || 'Gagal mengambil data grafik.');
+        toast({ title: 'Kesalahan Grafik', description: chartResult.error || 'Gagal mengambil data grafik.', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error("Error fetching crypto chart data:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan saat mengambil data grafik.';
+      setChartError(errorMessage);
+      toast({ title: 'Kesalahan Grafik', description: errorMessage, variant: 'destructive' });
+    } finally {
+      setIsLoadingChart(false);
+    }
   };
+  
+  const handleCustomCryptoSubmit = () => {
+    // Untuk kripto kustom, kita asumsikan simbol sama dengan nama untuk API chart (ini mungkin perlu penyesuaian)
+    // Atau Anda bisa menambahkan input field lain untuk simbol.
+    if(customCryptoName.trim()){
+      handleAnalyzeAndChartCrypto({ name: customCryptoName, symbol: customCryptoName.toUpperCase() });
+    } else {
+      toast({ title: "Nama Kripto Kosong", description: "Harap masukkan nama mata uang kripto.", variant: "destructive" });
+    }
+  };
+
 
   return (
     <div className="space-y-8">
@@ -65,15 +124,16 @@ export default function KriptoPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analisis Mata Uang Kripto</h1>
           <p className="text-muted-foreground">
-            Dapatkan wawasan tentang mata uang kripto populer dengan bantuan AI.
+            Dapatkan wawasan dan lihat grafik harga mata uang kripto dengan bantuan AI dan data pasar.
           </p>
         </div>
       </div>
 
       {/* Predefined Crypto List */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"> {/* Mengubah ke 3 kolom untuk card yang lebih besar */}
         {cryptoList.map((crypto) => {
           const FallbackIcon = crypto.fallbackIcon;
+          const isLoadingCurrent = (isLoadingAnalysis || isLoadingChart) && selectedCrypto?.id === crypto.id;
           return (
             <Card key={crypto.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col rounded-xl overflow-hidden">
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 pt-4 px-4 bg-card-foreground/5">
@@ -88,25 +148,25 @@ export default function KriptoPage() {
                   width={36} 
                   height={36} 
                   className="rounded-full"
-                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40.png`; }} // Fallback for broken image links
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40.png`; }}
                 />
               </CardHeader>
               <CardContent className="flex-grow p-4">
-                <p className="text-sm text-muted-foreground italic">Klik tombol di bawah untuk analisis AI mendalam.</p>
+                <p className="text-sm text-muted-foreground italic">Klik tombol di bawah untuk analisis AI dan grafik harga.</p>
               </CardContent>
               <CardFooter className="p-4 bg-card-foreground/5">
                 <Button 
-                  onClick={() => handleAnalyzeCrypto(crypto.name)} 
+                  onClick={() => handleAnalyzeAndChartCrypto(crypto)} 
                   className="w-full"
-                  disabled={isLoadingAnalysis && selectedCrypto === crypto.name}
+                  disabled={isLoadingCurrent}
                   variant="default"
                 >
-                  {isLoadingAnalysis && selectedCrypto === crypto.name ? (
+                  {isLoadingCurrent ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <Bot className="mr-2 h-4 w-4" />
+                    <BarChart3 className="mr-2 h-4 w-4" /> // Mengganti ikon Bot dengan BarChart3
                   )}
-                  Analisis AI
+                  Analisis & Grafik
                 </Button>
               </CardFooter>
             </Card>
@@ -131,45 +191,72 @@ export default function KriptoPage() {
               onChange={(e) => setCustomCryptoName(e.target.value)}
               className="flex-grow text-base sm:text-sm"
               data-ai-hint="cryptocurrency name input"
+              onKeyDown={(e) => e.key === 'Enter' && handleCustomCryptoSubmit()}
             />
             <Button 
-              onClick={() => handleAnalyzeCrypto(customCryptoName)}
-              disabled={isLoadingAnalysis || !customCryptoName.trim()}
+              onClick={handleCustomCryptoSubmit}
+              disabled={(isLoadingAnalysis || isLoadingChart) || !customCryptoName.trim()}
               className="w-full sm:w-auto"
             >
-              {isLoadingAnalysis && selectedCrypto === customCryptoName ? (
+              {(isLoadingAnalysis || isLoadingChart) && selectedCrypto?.name.toLowerCase() === customCryptoName.toLowerCase() ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <Bot className="mr-2 h-4 w-4" /> 
+                <BarChart3 className="mr-2 h-4 w-4" /> 
               )}
-              Dapatkan Analisis
+              Dapatkan Analisis & Grafik
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Analysis Display Area */}
-      {(isLoadingAnalysis || analysisResult) && (
+      {/* Analysis and Chart Display Area */}
+      {(selectedCrypto) && (isLoadingAnalysis || analysisResult || isLoadingChart || chartData || chartError) && (
         <Card className="shadow-lg rounded-xl overflow-hidden">
           <CardHeader className="bg-card-foreground/5">
             <CardTitle className="flex items-center text-foreground">
-              <Bot className="mr-3 h-6 w-6 text-accent" /> Hasil Analisis AI untuk {selectedCrypto || "Pilihan Anda"}
+              <Bot className="mr-3 h-6 w-6 text-accent" /> Hasil untuk {selectedCrypto?.name || "Pilihan Anda"}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4">
-            {isLoadingAnalysis && !analysisResult && (
-              <div className="flex flex-col items-center justify-center h-48 space-y-3">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-muted-foreground">Sedang menganalisis {selectedCrypto}, mohon tunggu...</p>
+          <CardContent className="p-4 space-y-6">
+            {/* AI Analysis Section */}
+            {isLoadingAnalysis && (
+              <div className="flex flex-col items-center justify-center h-32 space-y-3">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Sedang menganalisis {selectedCrypto?.name}...</p>
               </div>
             )}
-            {analysisResult && (
-              <Textarea
-                value={analysisResult}
-                readOnly
-                className="min-h-[250px] bg-muted/20 text-sm border-border focus:ring-primary p-3 rounded-md"
-                placeholder="Hasil analisis akan ditampilkan di sini..."
-              />
+            {analysisResult && !isLoadingAnalysis && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Analisis AI:</h3>
+                <Textarea
+                  value={analysisResult}
+                  readOnly
+                  className="min-h-[200px] bg-muted/20 text-sm border-border focus:ring-primary p-3 rounded-md"
+                  placeholder="Hasil analisis AI akan ditampilkan di sini..."
+                />
+              </div>
+            )}
+            
+            {/* Chart Section */}
+            {isLoadingChart && (
+              <div className="flex flex-col items-center justify-center h-48 space-y-3">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="text-muted-foreground">Memuat data grafik untuk {selectedCrypto?.name}...</p>
+              </div>
+            )}
+            {chartError && !isLoadingChart && (
+               <div>
+                 <h3 className="text-lg font-semibold mb-2 text-destructive">Grafik Harga:</h3>
+                 <p className="text-destructive-foreground bg-destructive/20 p-3 rounded-md">{chartError}</p>
+               </div>
+            )}
+            {chartData && !isLoadingChart && !chartError && (
+              <CryptoChart data={chartData} cryptoName={selectedCrypto?.name || "Kripto"} />
+            )}
+             {!isLoadingChart && !chartData && !chartError && !isLoadingAnalysis && (
+                <div className="text-muted-foreground italic">
+                  <p>Pilih mata uang kripto atau masukkan nama di atas untuk melihat analisis dan grafik.</p>
+                </div>
             )}
           </CardContent>
         </Card>
