@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -5,7 +6,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { APP_ROUTES } from '@/lib/constants';
-import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarContent } from '@/components/layout/sidebar-content';
 import { Loader2 } from 'lucide-react';
 
@@ -45,6 +46,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <SidebarContent />
         </Sidebar>
         <SidebarInset>
+          <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background px-4 md:hidden">
+            {/* On mobile, show the hamburger trigger */}
+            <SidebarTrigger />
+            {/* You can add a logo or page title here for mobile header if needed */}
+            {/* For example: <AppLogo showText={false} /> */}
+          </header>
           <div className="p-4 md:p-6 lg:p-8">
             {children}
           </div>
