@@ -22,6 +22,7 @@ import {
   ReceiptText,
   Lightbulb,
   Briefcase, 
+  Coins, // Added Coins icon for Crypto
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ const navItems = [
   { href: APP_ROUTES.ENTRIES, label: "Catat Entri", icon: ListPlus },
   { href: APP_ROUTES.RECEIPTS, label: "Unggah Struk", icon: ReceiptText },
   { href: APP_ROUTES.TIPS, label: "Tips Keuangan", icon: Lightbulb },
+  { href: APP_ROUTES.KRIPTO, label: "Kripto", icon: Coins }, // Added Crypto navigation item
 ];
 
 export function SidebarContent() {
