@@ -4,18 +4,18 @@ import { DollarSign, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 export default function DashboardPage() {
   // Mock data - replace with actual data fetching
   const summaryData = [
-    { title: "Total Balance", value: "$10,250.75", icon: Wallet, color: "text-primary" },
-    { title: "Monthly Income", value: "$3,500.00", icon: TrendingUp, color: "text-green-500" },
-    { title: "Monthly Expenses", value: "$1,800.50", icon: TrendingDown, color: "text-red-500" },
-    { title: "Savings Rate", value: "48.5%", icon: DollarSign, color: "text-accent" },
+    { title: "Total Saldo", value: "Rp10.250.750", icon: Wallet, color: "text-primary" }, // Assuming IDR currency
+    { title: "Pendapatan Bulanan", value: "Rp3.500.000", icon: TrendingUp, color: "text-green-500" },
+    { title: "Pengeluaran Bulanan", value: "Rp1.800.500", icon: TrendingDown, color: "text-red-500" },
+    { title: "Tingkat Tabungan", value: "48,5%", icon: DollarSign, color: "text-accent" },
   ];
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's your financial overview.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Dasbor</h1>
+          <p className="text-muted-foreground">Selamat datang kembali! Berikut ringkasan keuangan Anda.</p>
         </div>
       </div>
 
@@ -28,7 +28,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{item.value}</div>
-              {/* <p className="text-xs text-muted-foreground">+20.1% from last month</p> */}
+              {/* <p className="text-xs text-muted-foreground">+20.1% dari bulan lalu</p> */}
             </CardContent>
           </Card>
         ))}
@@ -37,21 +37,21 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>Your latest income and expense activities.</CardDescription>
+            <CardTitle>Transaksi Terkini</CardTitle>
+            <CardDescription>Aktivitas pendapatan dan pengeluaran terbaru Anda.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground italic">Transaction list coming soon...</p>
+            <p className="text-muted-foreground italic">Daftar transaksi akan segera hadir...</p>
             {/* Placeholder for recent transactions list */}
           </CardContent>
         </Card>
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Spending Overview</CardTitle>
-            <CardDescription>Visual breakdown of your expenses.</CardDescription>
+            <CardTitle>Ringkasan Pengeluaran</CardTitle>
+            <CardDescription>Rincian visual pengeluaran Anda.</CardDescription>
           </CardHeader>
           <CardContent>
-             <p className="text-muted-foreground italic">Spending chart coming soon...</p>
+             <p className="text-muted-foreground italic">Grafik pengeluaran akan segera hadir...</p>
             {/* Placeholder for spending chart */}
           </CardContent>
         </Card>

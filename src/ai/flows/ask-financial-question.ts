@@ -1,27 +1,26 @@
-// 'use server';
-
-/**
- * @fileOverview This file defines a Genkit flow for answering user questions about financial tips and conclusions.
- *
- * - askFinancialQuestion - A function that takes a question and context as input and returns an answer.
- * - AskFinancialQuestionInput - The input type for the askFinancialQuestion function.
- * - AskFinancialQuestionOutput - The return type for the askFinancialQuestion function.
- */
 
 'use server';
+
+/**
+ * @fileOverview Berkas ini mendefinisikan alur Genkit untuk menjawab pertanyaan pengguna tentang tips dan kesimpulan keuangan.
+ *
+ * - askFinancialQuestion - Fungsi yang menerima pertanyaan dan konteks sebagai input dan mengembalikan jawaban.
+ * - AskFinancialQuestionInput - Tipe input untuk fungsi askFinancialQuestion.
+ * - AskFinancialQuestionOutput - Tipe kembalian untuk fungsi askFinancialQuestion.
+ */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const AskFinancialQuestionInputSchema = z.object({
-  question: z.string().describe('The question the user is asking.'),
-  financialTips: z.string().describe('The financial tips and conclusions to provide context for the question.'),
+  question: z.string().describe('Pertanyaan yang diajukan pengguna.'),
+  financialTips: z.string().describe('Tips dan kesimpulan keuangan untuk memberikan konteks bagi pertanyaan tersebut.'),
 });
 
 export type AskFinancialQuestionInput = z.infer<typeof AskFinancialQuestionInputSchema>;
 
 const AskFinancialQuestionOutputSchema = z.object({
-  answer: z.string().describe('The answer to the user question, based on the provided financial tips and conclusions.'),
+  answer: z.string().describe('Jawaban atas pertanyaan pengguna, berdasarkan tips dan kesimpulan keuangan yang diberikan.'),
 });
 
 export type AskFinancialQuestionOutput = z.infer<typeof AskFinancialQuestionOutputSchema>;
@@ -34,15 +33,15 @@ const prompt = ai.definePrompt({
   name: 'askFinancialQuestionPrompt',
   input: {schema: AskFinancialQuestionInputSchema},
   output: {schema: AskFinancialQuestionOutputSchema},
-  prompt: `You are a financial advisor. A user has received the following financial tips and conclusions:
+  prompt: `Anda adalah seorang penasihat keuangan. Seorang pengguna telah menerima tips dan kesimpulan keuangan berikut:
 
   {{financialTips}}
 
-The user is asking the following question about these tips:
+Pengguna menanyakan pertanyaan berikut tentang tips ini:
 
   {{question}}
 
-Answer the user's question clearly and concisely, using the information provided in the financial tips and conclusions as context. Do not provide any financial advice beyond the scope of the provided tips and conclusions.`,
+Jawab pertanyaan pengguna dengan jelas dan ringkas, menggunakan informasi yang diberikan dalam tips dan kesimpulan keuangan sebagai konteks. Jangan memberikan nasihat keuangan apa pun di luar cakupan tips dan kesimpulan yang diberikan. Selalu jawab dalam Bahasa Indonesia.`,
 });
 
 const askFinancialQuestionFlow = ai.defineFlow(

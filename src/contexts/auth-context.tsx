@@ -30,7 +30,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Mock checking for stored session
     const storedUser = localStorage.getItem('keuanganku-user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -40,28 +39,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, pass: string) => {
     setLoading(true);
-    // Mock API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     let mockUser: User | null = null;
 
     if (email === 'user@example.com' && pass === 'password') {
-      mockUser = { id: '1', email: 'user@example.com', name: 'Demo User' };
+      mockUser = { id: '1', email: 'user@example.com', name: 'Pengguna Demo' };
     } else if (email === 'admin@gmail.com' && pass === 'password') {
-      mockUser = { id: '2', email: 'admin@gmail.com', name: 'Admin User' };
+      mockUser = { id: '2', email: 'admin@gmail.com', name: 'Pengguna Admin' };
     } else if (email === 'swandarutirtasandhika1@gmail.com' && pass === 'password') {
       mockUser = { id: '3', email: 'swandarutirtasandhika1@gmail.com', name: 'Swandaru T S' };
     }
 
-
     if (mockUser) {
       setUser(mockUser);
       localStorage.setItem('keuanganku-user', JSON.stringify(mockUser));
-      toast({ title: 'Login Successful', description: 'Welcome back!' });
+      toast({ title: 'Login Berhasil', description: 'Selamat datang kembali!' });
       router.push(APP_ROUTES.DASHBOARD);
     } else {
       toast({
-        title: 'Login Failed',
-        description: 'Invalid email or password.',
+        title: 'Login Gagal',
+        description: 'Email atau kata sandi tidak valid.',
         variant: 'destructive',
       });
     }
@@ -72,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setUser(null);
     localStorage.removeItem('keuanganku-user');
-    toast({ title: 'Logged Out', description: 'You should be redirected to the login page.' });
+    toast({ title: 'Berhasil Keluar', description: 'Anda akan diarahkan ke halaman login.' });
     router.push(APP_ROUTES.LOGIN);
     setLoading(false);
   };

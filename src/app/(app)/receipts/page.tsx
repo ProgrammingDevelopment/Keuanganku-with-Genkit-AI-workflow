@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { EntryForm } from '@/components/entries/entry-form';
 import { Button } from '@/components/ui/button';
-import { Wand2, Edit3 } from 'lucide-react';
+import { Wand2, Edit3, FileText, Loader2 } from 'lucide-react'; // Replaced ReceiptText with FileText, added Loader2
 
 export default function ReceiptsPage() {
   const [ocrData, setOcrData] = useState<OcrData | null>(null);
@@ -31,21 +31,21 @@ export default function ReceiptsPage() {
       const base64Data = reader.result as string;
       try {
         const input: OcrReceiptInput = { receiptDataUri: base64Data };
-        const result = await ocrReceipt(input); // Call your GenAI flow
+        const result = await ocrReceipt(input);
         setOcrData(result);
-        toast({ title: 'OCR Successful', description: 'Receipt data extracted.' });
+        toast({ title: 'OCR Berhasil', description: 'Data struk berhasil diekstrak.' });
       } catch (err) {
-        console.error("OCR Error:", err);
-        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred during OCR processing.';
+        console.error("Kesalahan OCR:", err);
+        const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan yang tidak diketahui selama pemrosesan OCR.';
         setError(errorMessage);
-        toast({ title: 'OCR Failed', description: errorMessage, variant: 'destructive' });
+        toast({ title: 'OCR Gagal', description: errorMessage, variant: 'destructive' });
       } finally {
         setIsLoading(false);
       }
     };
     reader.onerror = () => {
-      setError('Failed to read file.');
-      toast({ title: 'File Read Error', description: 'Could not read the uploaded file.', variant: 'destructive' });
+      setError('Gagal membaca berkas.');
+      toast({ title: 'Kesalahan Membaca Berkas', description: 'Tidak dapat membaca berkas yang diunggah.', variant: 'destructive' });
       setIsLoading(false);
     };
   };
@@ -53,39 +53,38 @@ export default function ReceiptsPage() {
   const handleCreateEntryFromOcr = () => {
     if (ocrData) {
       setEntryInitialData({
-        type: 'expense', // Default to expense
+        type: 'expense', 
         date: ocrData.date,
         amount: ocrData.amount,
-        notes: `Purchase at ${ocrData.merchant}`,
+        notes: `Pembelian di ${ocrData.merchant}`,
         category: ocrData.category,
       });
       setIsEntryFormOpen(true);
     }
   };
   
-  // Mock adding entry - in a real app, this would save to a database
   const handleEntrySubmit = (entry: Omit<FinancialEntry, 'id'> | FinancialEntry) => {
-    console.log("New entry from OCR:", entry);
-    toast({ title: "Entry Created", description: `Entry for ${entry.notes} created successfully.`});
+    console.log("Entri baru dari OCR:", entry);
+    toast({ title: "Entri Dibuat", description: `Entri untuk ${entry.notes} berhasil dibuat.`});
     setIsEntryFormOpen(false);
-    setOcrData(null); // Clear OCR data after creating entry
+    setOcrData(null); 
   };
 
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Upload Receipt</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Unggah Struk</h1>
         <p className="text-muted-foreground">
-          Upload an image of your receipt to automatically extract its details.
+          Unggah gambar struk Anda untuk mengekstrak detailnya secara otomatis.
         </p>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Receipt Scanner</CardTitle>
-            <CardDescription>Select an image file (PNG, JPG) of your receipt.</CardDescription>
+            <CardTitle>Pemindai Struk</CardTitle>
+            <CardDescription>Pilih berkas gambar (PNG, JPG) struk Anda.</CardDescription>
           </CardHeader>
           <CardContent>
             <ReceiptUploadForm onSubmit={handleReceiptUpload} isLoading={isLoading} />
@@ -94,30 +93,30 @@ export default function ReceiptsPage() {
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Extracted Information</CardTitle>
-            <CardDescription>Details from your uploaded receipt will appear here.</CardDescription>
+            <CardTitle>Informasi yang Diekstrak</CardTitle>
+            <CardDescription>Detail dari struk yang Anda unggah akan muncul di sini.</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading && (
               <div className="flex items-center justify-center h-40">
                 <Wand2 className="h-8 w-8 animate-pulse text-primary" />
-                <p className="ml-2">Scanning your receipt...</p>
+                <p className="ml-2">Memindai struk Anda...</p>
               </div>
             )}
-            {error && <p className="text-destructive">Error: {error}</p>}
+            {error && <p className="text-destructive">Kesalahan: {error}</p>}
             {ocrData && !isLoading && (
               <>
                 <OcrResultDisplay data={ocrData} />
                 <Button onClick={handleCreateEntryFromOcr} className="mt-6 w-full">
-                  <Edit3 className="mr-2 h-4 w-4" /> Create Entry from Receipt
+                  <Edit3 className="mr-2 h-4 w-4" /> Buat Entri dari Struk
                 </Button>
               </>
             )}
             {!ocrData && !isLoading && !error && (
               <div className="text-center py-10 text-muted-foreground">
-                <ReceiptText className="mx-auto h-12 w-12 mb-4" />
-                <p className="text-lg">No receipt scanned yet.</p>
-                <p>Upload a receipt to see its details.</p>
+                <FileText className="mx-auto h-12 w-12 mb-4" />
+                <p className="text-lg">Belum ada struk yang dipindai.</p>
+                <p>Unggah struk untuk melihat detailnya.</p>
               </div>
             )}
           </CardContent>
@@ -127,15 +126,14 @@ export default function ReceiptsPage() {
       <Dialog open={isEntryFormOpen} onOpenChange={setIsEntryFormOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Create New Entry from Receipt</DialogTitle>
+            <DialogTitle>Buat Entri Baru dari Struk</DialogTitle>
             <DialogDescription>
-              Review and confirm the details extracted from your receipt.
+              Tinjau dan konfirmasi detail yang diekstrak dari struk Anda.
             </DialogDescription>
           </DialogHeader>
           {entryInitialData && (
              <EntryForm 
                 onSubmit={handleEntrySubmit} 
-                // This casting is okay as EntryForm defaultValues will handle date string conversion
                 initialData={entryInitialData as FinancialEntry} 
                 onCancel={() => setIsEntryFormOpen(false)}
               />

@@ -12,7 +12,7 @@ import {
   SidebarSeparator,
   SidebarContent as UiSidebarContent, // Renaming to avoid conflict
 } from "@/components/ui/sidebar";
-import { AppLogo } from "./app-logo";
+// import { AppLogo } from "./app-logo"; // AppLogo with text is handled differently now
 import { ThemeToggle } from "./theme-toggle";
 import { UserNav } from "./user-nav";
 import { APP_ROUTES } from "@/lib/constants";
@@ -21,15 +21,15 @@ import {
   ListPlus,
   ReceiptText,
   Lightbulb,
-  Briefcase, // Using Briefcase as a generic icon for Landmark
+  Briefcase, 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: APP_ROUTES.DASHBOARD, label: "Dashboard", icon: LayoutDashboard },
-  { href: APP_ROUTES.ENTRIES, label: "Record Entries", icon: ListPlus },
-  { href: APP_ROUTES.RECEIPTS, label: "Upload Receipt", icon: ReceiptText },
-  { href: APP_ROUTES.TIPS, label: "Financial Tips", icon: Lightbulb },
+  { href: APP_ROUTES.DASHBOARD, label: "Dasbor", icon: LayoutDashboard },
+  { href: APP_ROUTES.ENTRIES, label: "Catat Entri", icon: ListPlus },
+  { href: APP_ROUTES.RECEIPTS, label: "Unggah Struk", icon: ReceiptText },
+  { href: APP_ROUTES.TIPS, label: "Tips Keuangan", icon: Lightbulb },
 ];
 
 export function SidebarContent() {
@@ -39,7 +39,7 @@ export function SidebarContent() {
     <UiSidebarContent className="flex flex-col">
       <SidebarHeader className="p-4">
         <Link href={APP_ROUTES.DASHBOARD} className="flex items-center gap-2" passHref>
-            <Briefcase className="h-8 w-8 text-primary" /> {/* Replaced AppLogo with Briefcase for simplicity within SidebarHeader */}
+            <Briefcase className="h-8 w-8 text-primary" /> 
             <span className="text-xl font-bold text-foreground group-data-[collapsible=icon]:hidden">
               KeuanganKu
             </span>

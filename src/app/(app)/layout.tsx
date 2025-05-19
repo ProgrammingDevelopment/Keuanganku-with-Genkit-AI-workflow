@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Loading your KeuanganKu...</p>
+        <p className="ml-4 text-lg">Memuat KeuanganKu Anda...</p>
       </div>
     );
   }
@@ -33,7 +33,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return (
        <div className="flex h-screen w-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Redirecting to login...</p>
+        <p className="ml-4 text-lg">Mengarahkan ke halaman login...</p>
       </div>
     );
   }

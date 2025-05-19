@@ -10,8 +10,8 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <AppLogo className="h-16 w-16 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold">Welcome to KeuanganKu</CardTitle>
-          <CardDescription>Sign in to manage your finances</CardDescription>
+          <CardTitle className="text-3xl font-bold">Selamat Datang di KeuanganKu</CardTitle>
+          <CardDescription>Masuk untuk mengelola keuangan Anda</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

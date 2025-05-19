@@ -20,12 +20,12 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert("File is too large. Maximum size is 5MB.");
+      if (file.size > 5 * 1024 * 1024) { // Batas 5MB
+        alert("Ukuran berkas terlalu besar. Ukuran maksimal adalah 5MB.");
         return;
       }
       if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-        alert("Invalid file type. Please upload PNG, JPG, or WEBP images.");
+        alert("Jenis berkas tidak valid. Harap unggah gambar PNG, JPG, atau WEBP.");
         return;
       }
       setSelectedFile(file);
@@ -56,7 +56,7 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <Label htmlFor="receipt-upload" className="block text-sm font-medium text-foreground mb-1">
-          Receipt Image
+          Gambar Struk
         </Label>
         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md border-border hover:border-primary transition-colors">
           <div className="space-y-1 text-center">
@@ -64,7 +64,7 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
               <div className="relative group">
                 <Image 
                   src={previewUrl} 
-                  alt="Receipt preview" 
+                  alt="Pratinjau struk" 
                   width={300} 
                   height={200} 
                   className="mx-auto h-48 w-auto rounded-md object-contain"
@@ -76,6 +76,7 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
                   size="icon" 
                   className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={clearSelection}
+                  aria-label="Hapus pratinjau"
                 >
                   <XCircle className="h-4 w-4"/>
                 </Button>
@@ -88,7 +89,7 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
                 htmlFor="receipt-upload"
                 className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
               >
-                <span>Upload a file</span>
+                <span>Unggah berkas</span>
                 <Input 
                   id="receipt-upload" 
                   name="receipt-upload" 
@@ -100,9 +101,9 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
                   data-ai-hint="file upload receipt"
                 />
               </Label>
-              {!previewUrl && <p className="pl-1">or drag and drop</p>}
+              {!previewUrl && <p className="pl-1">atau seret dan lepas</p>}
             </div>
-            {!previewUrl && <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 5MB</p>}
+            {!previewUrl && <p className="text-xs text-muted-foreground">PNG, JPG, WEBP hingga 5MB</p>}
             {selectedFile && !previewUrl && <p className="text-sm text-foreground mt-2">{selectedFile.name}</p>}
           </div>
         </div>
@@ -114,7 +115,7 @@ export function ReceiptUploadForm({ onSubmit, isLoading }: ReceiptUploadFormProp
         ) : (
           <UploadCloud className="mr-2 h-4 w-4" />
         )}
-        {isLoading ? 'Processing...' : 'Scan Receipt'}
+        {isLoading ? 'Memproses...' : 'Pindai Struk'}
       </Button>
     </form>
   );

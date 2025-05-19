@@ -12,9 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { useToast } from '@/hooks/use-toast';
 
 const initialEntries: FinancialEntry[] = [
-  { id: '1', type: 'income', date: '2024-07-15', amount: 1200, notes: 'Freelance Project A', category: 'Work' },
-  { id: '2', type: 'expense', date: '2024-07-16', amount: 45.50, notes: 'Groceries', category: 'Food' },
-  { id: '3', type: 'expense', date: '2024-07-18', amount: 120, notes: 'Electricity Bill', category: 'Utilities' },
+  { id: '1', type: 'income', date: '2024-07-15', amount: 1200000, notes: 'Proyek Lepas A', category: 'Pekerjaan' },
+  { id: '2', type: 'expense', date: '2024-07-16', amount: 45500, notes: 'Belanja Bulanan', category: 'Makanan' },
+  { id: '3', type: 'expense', date: '2024-07-18', amount: 120000, notes: 'Tagihan Listrik', category: 'Utilitas' },
 ];
 
 export default function EntriesPage() {
@@ -26,19 +26,19 @@ export default function EntriesPage() {
   const addEntry = (entry: Omit<FinancialEntry, 'id'>) => {
     setEntries(prev => [{ ...entry, id: Date.now().toString() }, ...prev]);
     setIsFormOpen(false);
-    toast({ title: 'Entry Added', description: 'Your new financial entry has been recorded.' });
+    toast({ title: 'Entri Ditambahkan', description: 'Entri keuangan baru Anda telah dicatat.' });
   };
 
   const updateEntry = (updatedEntry: FinancialEntry) => {
     setEntries(prev => prev.map(e => e.id === updatedEntry.id ? updatedEntry : e));
     setEditingEntry(undefined);
     setIsFormOpen(false);
-    toast({ title: 'Entry Updated', description: 'The financial entry has been updated.' });
+    toast({ title: 'Entri Diperbarui', description: 'Entri keuangan telah diperbarui.' });
   };
 
   const deleteEntry = (id: string) => {
     setEntries(prev => prev.filter(e => e.id !== id));
-    toast({ title: 'Entry Deleted', description: 'The financial entry has been removed.', variant: 'destructive' });
+    toast({ title: 'Entri Dihapus', description: 'Entri keuangan telah dihapus.', variant: 'destructive' });
   };
 
   const handleEdit = (entry: FinancialEntry) => {
@@ -53,37 +53,37 @@ export default function EntriesPage() {
 
   const exportToCSV = () => {
     if (entries.length === 0) {
-      toast({ title: 'No Entries', description: 'There are no entries to export.', variant: 'destructive' });
+      toast({ title: 'Tidak Ada Entri', description: 'Tidak ada entri untuk diekspor.', variant: 'destructive' });
       return;
     }
 
-    const header = ['ID', 'Type', 'Date', 'Amount', 'Notes', 'Category'];
+    const header = ['ID', 'Jenis', 'Tanggal', 'Jumlah', 'Catatan', 'Kategori'];
     const rows = entries.map(entry => 
       [
         entry.id,
-        entry.type,
+        entry.type === 'income' ? 'Pendapatan' : 'Pengeluaran',
         entry.date,
         entry.amount.toString(),
-        entry.notes.includes(',') ? `"${entry.notes}"` : entry.notes, // Handle commas in notes
+        entry.notes.includes(',') ? `"${entry.notes}"` : entry.notes,
         entry.category?.includes(',') ? `"${entry.category}"` : entry.category || ''
       ].join(',')
     );
 
     const csvContent = [header.join(','), ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); // Added BOM for Excel
     const link = document.createElement('a');
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', 'financial_entries.csv');
+      link.setAttribute('download', 'entri_keuangan.csv');
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast({ title: 'Export Successful', description: 'Your financial entries have been exported to CSV.' });
+      toast({ title: 'Ekspor Berhasil', description: 'Entri keuangan Anda telah diekspor ke CSV.' });
     } else {
-       toast({ title: 'Export Failed', description: 'Your browser does not support this feature.', variant: 'destructive' });
+       toast({ title: 'Ekspor Gagal', description: 'Peramban Anda tidak mendukung fitur ini.', variant: 'destructive' });
     }
   };
 
@@ -91,24 +91,24 @@ export default function EntriesPage() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Financial Entries</h1>
-          <p className="text-muted-foreground">Record and manage your income and expenses.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Entri Keuangan</h1>
+          <p className="text-muted-foreground">Catat dan kelola pendapatan serta pengeluaran Anda.</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={exportToCSV} variant="outline">
-            <Download className="mr-2 h-5 w-5" /> Export to CSV
+            <Download className="mr-2 h-5 w-5" /> Ekspor ke CSV
           </Button>
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button onClick={openNewEntryDialog}>
-                <PlusCircle className="mr-2 h-5 w-5" /> Add New Entry
+                <PlusCircle className="mr-2 h-5 w-5" /> Tambah Entri Baru
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle>{editingEntry ? 'Edit Entry' : 'Add New Entry'}</DialogTitle>
+                <DialogTitle>{editingEntry ? 'Ubah Entri' : 'Tambah Entri Baru'}</DialogTitle>
                 <DialogDescription>
-                  {editingEntry ? 'Update the details of your financial entry.' : 'Fill in the details for your new income or expense.'}
+                  {editingEntry ? 'Perbarui detail entri keuangan Anda.' : 'Isi detail untuk pendapatan atau pengeluaran baru Anda.'}
                 </DialogDescription>
               </DialogHeader>
               <EntryForm 
@@ -123,8 +123,8 @@ export default function EntriesPage() {
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle>All Entries</CardTitle>
-          <CardDescription>View and manage your recorded financial activities.</CardDescription>
+          <CardTitle>Semua Entri</CardTitle>
+          <CardDescription>Lihat dan kelola aktivitas keuangan yang telah Anda catat.</CardDescription>
         </CardHeader>
         <CardContent>
           {entries.length > 0 ? (
@@ -132,8 +132,8 @@ export default function EntriesPage() {
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <ListPlus className="mx-auto h-12 w-12 mb-4" />
-              <p className="text-lg">No entries yet.</p>
-              <p>Click "Add New Entry" to get started.</p>
+              <p className="text-lg">Belum ada entri.</p>
+              <p>Klik "Tambah Entri Baru" untuk memulai.</p>
             </div>
           )}
         </CardContent>

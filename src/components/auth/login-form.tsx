@@ -17,8 +17,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { Loader2, LogIn } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  email: z.string().email({ message: "Alamat email tidak valid." }),
+  password: z.string().min(6, { message: "Kata sandi minimal 6 karakter." }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -50,7 +50,7 @@ export function LoginForm() {
               <FormControl>
                 <Input 
                   type="email" 
-                  placeholder="user@example.com" 
+                  placeholder="pengguna@contoh.com" 
                   {...field} 
                   data-ai-hint="email input"
                 />
@@ -64,7 +64,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Kata Sandi</FormLabel>
               <FormControl>
                 <Input 
                   type="password" 
@@ -82,7 +82,7 @@ export function LoginForm() {
             <Loader2 className="animate-spin" />
           ) : (
             <>
-              <LogIn className="mr-2 h-4 w-4" /> Sign In
+              <LogIn className="mr-2 h-4 w-4" /> Masuk
             </>
           )}
         </Button>

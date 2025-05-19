@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
+import { GeistMono } from 'geist/font/mono'; // Corrected import path
 import './globals.css';
 import { ThemeProvider } from '@/contexts/theme-provider';
 import { AuthProvider } from '@/contexts/auth-context';
@@ -10,8 +10,8 @@ const geistSans = GeistSans; // Use the imported object directly
 const geistMono = GeistMono;
 
 export const metadata: Metadata = {
-  title: 'KeuanganKu - Personal Finance Manager',
-  description: 'Manage your personal finances with KeuanganKu.',
+  title: 'KeuanganKu - Manajer Keuangan Pribadi',
+  description: 'Kelola keuangan pribadi Anda dengan KeuanganKu.',
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"

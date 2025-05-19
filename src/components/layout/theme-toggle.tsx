@@ -10,7 +10,7 @@ import { useSidebar } from "@/components/ui/sidebar"
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme()
-  const { state: sidebarState } = useSidebar() // To adapt display for collapsed sidebar
+  const { state: sidebarState } = useSidebar() 
 
   const isDarkMode = theme === "dark"
 
@@ -19,7 +19,7 @@ export function ThemeToggle() {
   }
 
   const Icon = isDarkMode ? Sun : Moon;
-  const label = isDarkMode ? "Switch to light mode" : "Switch to dark mode";
+  const label = isDarkMode ? "Ganti ke mode terang" : "Ganti ke mode gelap";
 
   if (sidebarState === "collapsed") {
     return (

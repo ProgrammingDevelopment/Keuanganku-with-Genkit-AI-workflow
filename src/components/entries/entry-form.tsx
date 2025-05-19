@@ -21,12 +21,13 @@ import type { FinancialEntry } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, Save } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { id as indonesiaLocale } from "date-fns/locale"; // For Indonesian date format
 
 const entrySchema = z.object({
-  type: z.enum(["income", "expense"], { required_error: "Please select an entry type." }),
-  date: z.date({ required_error: "Please select a date." }),
-  amount: z.coerce.number().positive({ message: "Amount must be a positive number." }),
-  notes: z.string().min(1, { message: "Notes cannot be empty." }).max(200, {message: "Notes too long (max 200 chars)."}),
+  type: z.enum(["income", "expense"], { required_error: "Silakan pilih jenis entri." }),
+  date: z.date({ required_error: "Silakan pilih tanggal." }),
+  amount: z.coerce.number().positive({ message: "Jumlah harus berupa angka positif." }),
+  notes: z.string().min(1, { message: "Catatan tidak boleh kosong." }).max(200, {message: "Catatan terlalu panjang (maks 200 karakter)."}),
   category: z.string().optional(),
 });
 
@@ -56,7 +57,7 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
   const handleSubmit = (data: EntryFormValues) => {
     const entryData = {
       ...data,
-      date: format(data.date, "yyyy-MM-dd"), // Format date to string for storage
+      date: format(data.date, "yyyy-MM-dd"), 
     };
     if (initialData?.id) {
       onSubmit({ ...entryData, id: initialData.id });
@@ -74,16 +75,16 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type</FormLabel>
+              <FormLabel>Jenis</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select entry type" />
+                    <SelectValue placeholder="Pilih jenis entri" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Pendapatan</SelectItem>
+                  <SelectItem value="expense">Pengeluaran</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -96,7 +97,7 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
+              <FormLabel>Tanggal</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -108,9 +109,9 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        format(field.value, "PPP", { locale: indonesiaLocale })
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Pilih tanggal</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -125,6 +126,7 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
                       date > new Date() || date < new Date("1900-01-01")
                     }
                     initialFocus
+                    locale={indonesiaLocale}
                   />
                 </PopoverContent>
               </Popover>
@@ -138,7 +140,7 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>Jumlah</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="0.00" {...field} step="0.01" />
               </FormControl>
@@ -152,9 +154,9 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category (Optional)</FormLabel>
+              <FormLabel>Kategori (Opsional)</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Groceries, Salary" {...field} />
+                <Input placeholder="cth: Belanja, Gaji" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -166,9 +168,9 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes</FormLabel>
+              <FormLabel>Catatan</FormLabel>
               <FormControl>
-                <Textarea placeholder="Describe the entry..." {...field} />
+                <Textarea placeholder="Deskripsikan entri..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -176,9 +178,9 @@ export function EntryForm({ onSubmit, initialData, onCancel }: EntryFormProps) {
         />
         
         <div className="flex justify-end space-x-2 pt-2">
-          {onCancel && <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>}
+          {onCancel && <Button type="button" variant="outline" onClick={onCancel}>Batal</Button>}
           <Button type="submit">
-            <Save className="mr-2 h-4 w-4" /> {initialData ? 'Save Changes' : 'Add Entry'}
+            <Save className="mr-2 h-4 w-4" /> {initialData ? 'Simpan Perubahan' : 'Tambah Entri'}
           </Button>
         </div>
       </form>

@@ -32,12 +32,11 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={`https://placehold.co/100x100.png?text=${userInitials}`} alt={user.name || "User"} data-ai-hint="user avatar" />
+                  <AvatarImage src={`https://placehold.co/100x100.png?text=${userInitials}`} alt={user.name || "Pengguna"} data-ai-hint="user avatar" />
                   <AvatarFallback>{userInitials}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            {/* Content remains the same, just triggered by icon button */}
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
@@ -51,13 +50,13 @@ export function UserNav() {
               <DropdownMenuGroup>
                 <DropdownMenuItem disabled>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>Pengaturan</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>Keluar</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -74,7 +73,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative w-full justify-start h-12 gap-2 px-2">
           <Avatar className="h-8 w-8">
-             <AvatarImage src={`https://placehold.co/100x100.png?text=${userInitials}`} alt={user.name || "User"} data-ai-hint="user avatar" />
+             <AvatarImage src={`https://placehold.co/100x100.png?text=${userInitials}`} alt={user.name || "Pengguna"} data-ai-hint="user avatar" />
             <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start truncate">
@@ -97,13 +96,13 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem disabled>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>Pengaturan</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>Keluar</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

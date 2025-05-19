@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Loader2 } from "lucide-react";
 
 const questionSchema = z.object({
-  question: z.string().min(5, { message: "Question must be at least 5 characters." }).max(500, {message: "Question too long (max 500 chars)."}),
+  question: z.string().min(5, { message: "Pertanyaan minimal 5 karakter." }).max(500, {message: "Pertanyaan terlalu panjang (maks 500 karakter)."}),
 });
 
 type QuestionFormValues = z.infer<typeof questionSchema>;
@@ -36,7 +36,7 @@ export function AskQuestionForm({ onSubmit, isLoading }: AskQuestionFormProps) {
 
   const handleSubmit = (data: QuestionFormValues) => {
     onSubmit(data.question);
-    form.reset(); // Optionally reset form after submission
+    form.reset(); 
   };
 
   return (
@@ -47,11 +47,11 @@ export function AskQuestionForm({ onSubmit, isLoading }: AskQuestionFormProps) {
           name="question"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="financial-question">Your Question</FormLabel>
+              <FormLabel htmlFor="financial-question">Pertanyaan Anda</FormLabel>
               <FormControl>
                 <Textarea
                   id="financial-question"
-                  placeholder="e.g., How can I improve my savings rate based on these tips?"
+                  placeholder="cth: Bagaimana cara meningkatkan rasio tabungan saya berdasarkan tips ini?"
                   className="min-h-[100px]"
                   {...field}
                   data-ai-hint="financial question"
@@ -67,7 +67,7 @@ export function AskQuestionForm({ onSubmit, isLoading }: AskQuestionFormProps) {
           ) : (
             <Send className="mr-2 h-4 w-4" />
           )}
-          {isLoading ? 'Asking...' : 'Ask AI Assistant'}
+          {isLoading ? 'Menanyakan...' : 'Tanya Asisten AI'}
         </Button>
       </form>
     </Form>

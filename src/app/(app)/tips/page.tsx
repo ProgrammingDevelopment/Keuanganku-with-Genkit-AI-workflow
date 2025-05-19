@@ -9,17 +9,16 @@ import { askFinancialQuestion, type AskFinancialQuestionInput, type AskFinancial
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Bot, MessageSquare } from 'lucide-react';
+import { RefreshCw, Bot, MessageSquare, Loader2 } from 'lucide-react'; // Added Loader2
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Mock entries data for demonstration
 const mockEntries: FinancialEntry[] = [
-  { id: '1', type: 'income', date: '2024-07-01', amount: 3000, notes: 'Salary July', category: 'Salary' },
-  { id: '2', type: 'expense', date: '2024-07-02', amount: 1000, notes: 'Rent', category: 'Housing' },
-  { id: '3', type: 'expense', date: '2024-07-05', amount: 150, notes: 'Groceries', category: 'Food' },
-  { id: '4', type: 'expense', date: '2024-07-10', amount: 200, notes: 'Dining Out', category: 'Food' },
-  { id: '5', type: 'income', date: '2024-07-15', amount: 500, notes: 'Freelance Gig', category: 'Side Hustle' },
-  { id: '6', type: 'expense', date: '2024-07-20', amount: 80, notes: 'Subscription Services', category: 'Entertainment' },
+  { id: '1', type: 'income', date: '2024-07-01', amount: 3000000, notes: 'Gaji Juli', category: 'Gaji' },
+  { id: '2', type: 'expense', date: '2024-07-02', amount: 1000000, notes: 'Sewa Apartemen', category: 'Tempat Tinggal' },
+  { id: '3', type: 'expense', date: '2024-07-05', amount: 150000, notes: 'Belanja Mingguan', category: 'Makanan' },
+  { id: '4', type: 'expense', date: '2024-07-10', amount: 200000, notes: 'Makan di Luar', category: 'Makanan' },
+  { id: '5', type: 'income', date: '2024-07-15', amount: 500000, notes: 'Proyek Lepas', category: 'Pekerjaan Sampingan' },
+  { id: '6', type: 'expense', date: '2024-07-20', amount: 80000, notes: 'Layanan Langganan', category: 'Hiburan' },
 ];
 
 export default function TipsPage() {
@@ -31,10 +30,9 @@ export default function TipsPage() {
 
   const fetchFinancialTips = async () => {
     setIsLoadingTips(true);
-    setTips(null); // Clear previous tips
-    setQuestionAnswer(null); // Clear previous answer
+    setTips(null); 
+    setQuestionAnswer(null); 
     try {
-      // In a real app, fetch entries from a database or state management
       const financialData: FinancialDataInput = {
         incomeEntries: mockEntries.filter(e => e.type === 'income').map(e => ({ date: e.date, amount: e.amount, notes: e.notes })),
         expenseEntries: mockEntries.filter(e => e.type === 'expense').map(e => ({ date: e.date, amount: e.amount, notes: e.notes })),
@@ -42,15 +40,14 @@ export default function TipsPage() {
       const result = await getPersonalizedFinancialTips(financialData);
       setTips(result);
     } catch (err) {
-      console.error("Error fetching tips:", err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch financial tips.';
-      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
+      console.error("Kesalahan mengambil tips:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal mengambil tips keuangan.';
+      toast({ title: 'Kesalahan', description: errorMessage, variant: 'destructive' });
     } finally {
       setIsLoadingTips(false);
     }
   };
 
-  // Fetch tips on initial load
   useEffect(() => {
     fetchFinancialTips();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,13 +56,13 @@ export default function TipsPage() {
 
   const handleAskQuestion = async (question: string) => {
     if (!tips) {
-      toast({ title: 'Error', description: 'Please generate tips first.', variant: 'destructive' });
+      toast({ title: 'Kesalahan', description: 'Harap hasilkan tips terlebih dahulu.', variant: 'destructive' });
       return;
     }
     setIsLoadingAnswer(true);
     setQuestionAnswer(null);
     try {
-      const combinedTipsContext = `Summary: ${tips.summary}. Issues: ${tips.potentialIssues.join(', ')}. Advice: ${tips.advice.join(', ')}.`;
+      const combinedTipsContext = `Ringkasan: ${tips.summary}. Masalah: ${tips.potentialIssues.join(', ')}. Saran: ${tips.advice.join(', ')}.`;
       const input: AskFinancialQuestionInput = {
         question,
         financialTips: combinedTipsContext,
@@ -73,9 +70,9 @@ export default function TipsPage() {
       const result = await askFinancialQuestion(input);
       setQuestionAnswer(result.answer);
     } catch (err) {
-      console.error("Error asking question:", err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to get answer for your question.';
-      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
+      console.error("Kesalahan bertanya:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal mendapatkan jawaban untuk pertanyaan Anda.';
+      toast({ title: 'Kesalahan', description: errorMessage, variant: 'destructive' });
     } finally {
       setIsLoadingAnswer(false);
     }
@@ -85,21 +82,21 @@ export default function TipsPage() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Personalized Financial Tips</h1>
-          <p className="text-muted-foreground">AI-powered insights to help you manage your finances better.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Tips Keuangan Pribadi</h1>
+          <p className="text-muted-foreground">Wawasan bertenaga AI untuk membantu Anda mengelola keuangan dengan lebih baik.</p>
         </div>
         <Button onClick={fetchFinancialTips} disabled={isLoadingTips}>
           <RefreshCw className={`mr-2 h-4 w-4 ${isLoadingTips ? 'animate-spin' : ''}`} />
-          {isLoadingTips ? 'Refreshing...' : 'Refresh Tips'}
+          {isLoadingTips ? 'Menyegarkan...' : 'Segarkan Tips'}
         </Button>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Bot className="mr-2 h-6 w-6 text-primary" /> Your Financial Analysis
+            <Bot className="mr-2 h-6 w-6 text-primary" /> Analisis Keuangan Anda
           </CardTitle>
-          <CardDescription>Based on your recent income and expense entries.</CardDescription>
+          <CardDescription>Berdasarkan entri pendapatan dan pengeluaran terbaru Anda.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoadingTips ? (
@@ -112,7 +109,7 @@ export default function TipsPage() {
           ) : tips ? (
             <FinancialTipsDisplay tips={tips} />
           ) : (
-            <p className="text-muted-foreground">Click "Refresh Tips" to generate your personalized financial advice.</p>
+            <p className="text-muted-foreground">Klik "Segarkan Tips" untuk menghasilkan saran keuangan pribadi Anda.</p>
           )}
         </CardContent>
       </Card>
@@ -121,21 +118,21 @@ export default function TipsPage() {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <MessageSquare className="mr-2 h-6 w-6 text-accent" /> Ask About Your Tips
+              <MessageSquare className="mr-2 h-6 w-6 text-accent" /> Tanya Tentang Tips Anda
             </CardTitle>
-            <CardDescription>Have questions about the analysis? Ask the AI assistant.</CardDescription>
+            <CardDescription>Ada pertanyaan tentang analisis? Tanyakan pada asisten AI.</CardDescription>
           </CardHeader>
           <CardContent>
             <AskQuestionForm onSubmit={handleAskQuestion} isLoading={isLoadingAnswer} />
             {isLoadingAnswer && (
               <div className="mt-4 flex items-center text-muted-foreground">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Getting your answer...</span>
+                <span>Mendapatkan jawaban Anda...</span>
               </div>
             )}
             {questionAnswer && !isLoadingAnswer && (
               <div className="mt-6 p-4 bg-muted rounded-lg">
-                <h3 className="font-semibold mb-2">AI Assistant's Answer:</h3>
+                <h3 className="font-semibold mb-2">Jawaban Asisten AI:</h3>
                 <p className="text-sm whitespace-pre-wrap">{questionAnswer}</p>
               </div>
             )}
