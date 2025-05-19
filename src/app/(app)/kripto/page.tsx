@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Bitcoin, DollarSign, TrendingUp, Zap, RefreshCw, Bot, Loader2, Search, Coins, BarChart3 } from "lucide-react";
+import { Bitcoin, DollarSign, Zap, RefreshCw, Bot, Loader2, Search, Coins, BarChart3 } from "lucide-react"; // Removed TrendingUp as it was unused
 import { useToast } from '@/hooks/use-toast';
 import { analyzeCryptocurrency, type AnalyzeCryptocurrencyInput } from '@/ai/flows/analyze-cryptocurrency-flow';
 import { getArkhamChartAction, type GetArkhamChartActionResult } from './actions'; // Impor server action
@@ -20,18 +20,20 @@ interface CryptoDisplayInfo {
   id: string;
   name: string;
   symbol: string;
-  iconImage?: string;
+  iconImage?: string; // Still available if real images are sourced later
+  placeholderBackgroundColor: string; // For colored placeholders
+  placeholderTextColor: string; // For text on placeholder
   fallbackIcon: React.ElementType;
   mockPrice: string;
   dataAiHint: string;
 }
 
 const cryptoList: CryptoDisplayInfo[] = [
-  { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', fallbackIcon: Bitcoin, mockPrice: 'Rp 1.050.250.000', dataAiHint: 'bitcoin logo' },
-  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', fallbackIcon: Coins, mockPrice: 'Rp 60.750.000', dataAiHint: 'ethereum logo' },
-  { id: 'tether', name: 'Tether', symbol: 'USDT', fallbackIcon: DollarSign, mockPrice: 'Rp 16.250', dataAiHint: 'tether logo' },
-  { id: 'solana', name: 'Solana', symbol: 'SOL', fallbackIcon: Zap, mockPrice: 'Rp 2.500.000', dataAiHint: 'solana logo' },
-  { id: 'xrp', name: 'XRP', symbol: 'XRP', fallbackIcon: RefreshCw, mockPrice: 'Rp 8.200', dataAiHint: 'xrp logo' },
+  { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', fallbackIcon: Bitcoin, mockPrice: 'Rp 1.050.250.000', dataAiHint: 'bitcoin logo', placeholderBackgroundColor: 'F7931A', placeholderTextColor: 'FFFFFF' },
+  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', fallbackIcon: Coins, mockPrice: 'Rp 60.750.000', dataAiHint: 'ethereum logo', placeholderBackgroundColor: '627EEA', placeholderTextColor: 'FFFFFF' },
+  { id: 'tether', name: 'Tether', symbol: 'USDT', fallbackIcon: DollarSign, mockPrice: 'Rp 16.250', dataAiHint: 'tether logo', placeholderBackgroundColor: '26A17B', placeholderTextColor: 'FFFFFF' },
+  { id: 'solana', name: 'Solana', symbol: 'SOL', fallbackIcon: Zap, mockPrice: 'Rp 2.500.000', dataAiHint: 'solana logo', placeholderBackgroundColor: '9945FF', placeholderTextColor: 'FFFFFF' },
+  { id: 'xrp', name: 'XRP', symbol: 'XRP', fallbackIcon: RefreshCw, mockPrice: 'Rp 8.200', dataAiHint: 'xrp logo', placeholderBackgroundColor: '00AEEF', placeholderTextColor: 'FFFFFF' },
 ];
 
 export default function KriptoPage() {
@@ -52,23 +54,24 @@ export default function KriptoPage() {
     }));
   };
 
-  const handleAnalyzeAndChartCrypto = async (crypto: CryptoDisplayInfo | { name: string, symbol: string }) => {
+  const handleAnalyzeAndChartCrypto = async (crypto: Omit<CryptoDisplayInfo, 'fallbackIcon' | 'mockPrice' | 'dataAiHint' | 'placeholderBackgroundColor' | 'placeholderTextColor'> & Partial<Pick<CryptoDisplayInfo, 'id'>>) => {
     const cryptoName = crypto.name;
     const cryptoSymbol = crypto.symbol;
-
+  
     if (!cryptoName.trim()) {
       toast({ title: "Nama Kripto Kosong", description: "Harap masukkan nama mata uang kripto.", variant: "destructive" });
       return;
     }
     
-    setSelectedCrypto(crypto as CryptoDisplayInfo); // Simpan info kripto yang dipilih
+    // If it's a custom crypto, selectedCrypto might not have all fields like placeholderColor
+    const currentSelected: CryptoDisplayInfo | { name: string, symbol: string, id?: string } = cryptoList.find(c => c.id === crypto.id) || { name: cryptoName, symbol: cryptoSymbol, id: crypto.id };
+    setSelectedCrypto(currentSelected as CryptoDisplayInfo);
+
     setIsLoadingAnalysis(true);
     setAnalysisResult(null);
     setIsLoadingChart(true);
     setChartData(null);
     setChartError(null);
-
-    let aiAnalysisSuccessful = false;
 
     try {
       // 1. Dapatkan Analisis AI
@@ -76,7 +79,6 @@ export default function KriptoPage() {
       const result = await analyzeCryptocurrency(input);
       setAnalysisResult(result.analysis);
       toast({ title: `Analisis untuk ${cryptoName}`, description: "Analisis AI berhasil dimuat." });
-      aiAnalysisSuccessful = true;
     } catch (err) {
       console.error("Error fetching crypto analysis:", err);
       const errorMessage = err instanceof Error ? err.message : 'Gagal mengambil analisis mata uang kripto.';
@@ -86,13 +88,16 @@ export default function KriptoPage() {
       setIsLoadingAnalysis(false);
     }
 
-    // 2. Dapatkan Data Grafik (jika analisis AI berhasil atau sesuai kebutuhan)
-    // Kita akan tetap mencoba memuat grafik meskipun analisis AI gagal, agar pengguna tetap bisa melihat grafik.
     try {
       const chartResult: GetArkhamChartActionResult = await getArkhamChartAction(cryptoSymbol);
       if (chartResult.success && chartResult.data) {
-        setChartData(formatChartData(chartResult.data));
-        toast({ title: `Grafik untuk ${cryptoName}`, description: "Data grafik berhasil dimuat." });
+        if (chartResult.data.length > 0) {
+          setChartData(formatChartData(chartResult.data));
+          toast({ title: `Grafik untuk ${cryptoName}`, description: "Data grafik berhasil dimuat." });
+        } else {
+          setChartError(`Tidak ada data grafik yang tersedia untuk ${cryptoSymbol}.`);
+           toast({ title: 'Info Grafik', description: `Tidak ada data grafik yang ditemukan untuk ${cryptoSymbol}.`, variant: 'default' });
+        }
       } else {
         setChartError(chartResult.error || 'Gagal mengambil data grafik.');
         toast({ title: 'Kesalahan Grafik', description: chartResult.error || 'Gagal mengambil data grafik.', variant: 'destructive' });
@@ -108,10 +113,9 @@ export default function KriptoPage() {
   };
   
   const handleCustomCryptoSubmit = () => {
-    // Untuk kripto kustom, kita asumsikan simbol sama dengan nama untuk API chart (ini mungkin perlu penyesuaian)
-    // Atau Anda bisa menambahkan input field lain untuk simbol.
     if(customCryptoName.trim()){
-      handleAnalyzeAndChartCrypto({ name: customCryptoName, symbol: customCryptoName.toUpperCase() });
+      const symbol = customCryptoName.toUpperCase().split(' ')[0]; // Simple symbol extraction
+      handleAnalyzeAndChartCrypto({ name: customCryptoName, symbol: symbol });
     } else {
       toast({ title: "Nama Kripto Kosong", description: "Harap masukkan nama mata uang kripto.", variant: "destructive" });
     }
@@ -130,10 +134,10 @@ export default function KriptoPage() {
       </div>
 
       {/* Predefined Crypto List */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"> {/* Mengubah ke 3 kolom untuk card yang lebih besar */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         {cryptoList.map((crypto) => {
-          const FallbackIcon = crypto.fallbackIcon;
           const isLoadingCurrent = (isLoadingAnalysis || isLoadingChart) && selectedCrypto?.id === crypto.id;
+          const placeholderSrc = `https://placehold.co/40x40/${crypto.placeholderBackgroundColor}/${crypto.placeholderTextColor}.png?text=${crypto.symbol}`;
           return (
             <Card key={crypto.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col rounded-xl overflow-hidden">
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 pt-4 px-4 bg-card-foreground/5">
@@ -142,13 +146,13 @@ export default function KriptoPage() {
                   <CardDescription className="text-xs text-muted-foreground">{crypto.mockPrice}</CardDescription>
                 </div>
                 <Image 
-                  src={crypto.iconImage || `https://placehold.co/40x40.png`} 
+                  src={crypto.iconImage || placeholderSrc} 
                   data-ai-hint={crypto.dataAiHint} 
                   alt={`${crypto.name} logo`} 
                   width={36} 
                   height={36} 
                   className="rounded-full"
-                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40.png`; }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/CCC/000.png?text=?`; }} // Generic fallback
                 />
               </CardHeader>
               <CardContent className="flex-grow p-4">
@@ -164,7 +168,7 @@ export default function KriptoPage() {
                   {isLoadingCurrent ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <BarChart3 className="mr-2 h-4 w-4" /> // Mengganti ikon Bot dengan BarChart3
+                    <BarChart3 className="mr-2 h-4 w-4" />
                   )}
                   Analisis & Grafik
                 </Button>
@@ -253,9 +257,10 @@ export default function KriptoPage() {
             {chartData && !isLoadingChart && !chartError && (
               <CryptoChart data={chartData} cryptoName={selectedCrypto?.name || "Kripto"} />
             )}
-             {!isLoadingChart && !chartData && !chartError && !isLoadingAnalysis && (
-                <div className="text-muted-foreground italic">
-                  <p>Pilih mata uang kripto atau masukkan nama di atas untuk melihat analisis dan grafik.</p>
+             {!isLoadingChart && !chartData && !chartError && !isLoadingAnalysis && !analysisResult && ( // Improved condition to show initial message
+                <div className="text-muted-foreground italic text-center py-10">
+                  <BarChart3 className="mx-auto h-12 w-12 mb-4 text-muted-foreground/50" />
+                  <p>Pilih mata uang kripto atau masukkan nama di atas untuk melihat analisis dan grafik harga.</p>
                 </div>
             )}
           </CardContent>
@@ -264,3 +269,5 @@ export default function KriptoPage() {
     </div>
   );
 }
+
+    
