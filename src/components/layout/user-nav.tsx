@@ -1,3 +1,4 @@
+
 "use client"
 
 import { LogOut, UserCircle, Settings, ChevronDown } from "lucide-react"
@@ -15,6 +16,8 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 import { useSidebar } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import Link from "next/link";
+import { APP_ROUTES } from "@/lib/constants";
 
 export function UserNav() {
   const { user, logout } = useAuth();
@@ -48,10 +51,14 @@ export function UserNav() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem disabled>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Pengaturan</span>
-                </DropdownMenuItem>
+                <Link href={APP_ROUTES.SETTINGS} passHref legacyBehavior>
+                  <DropdownMenuItem asChild>
+                    <a>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Pengaturan</span>
+                    </a>
+                  </DropdownMenuItem>
+                </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>
@@ -94,10 +101,14 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem disabled>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Pengaturan</span>
-          </DropdownMenuItem>
+          <Link href={APP_ROUTES.SETTINGS} passHref legacyBehavior>
+            <DropdownMenuItem asChild>
+              <a>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Pengaturan</span>
+              </a>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

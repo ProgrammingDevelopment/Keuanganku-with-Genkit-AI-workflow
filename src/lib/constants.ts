@@ -6,5 +6,5 @@ export const APP_ROUTES = {
   RECEIPTS: '/receipts',
   TIPS: '/tips',
   KRIPTO: '/kripto', // Added new route for crypto page
+  SETTINGS: '/settings', // Added new route for settings page
 };
-
