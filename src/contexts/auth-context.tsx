@@ -1,6 +1,22 @@
 
 "use client";
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAoW6VfGObYzdWYQXKLGgkFZsOoyUsXY5M",
+  authDomain: "keuanganku-fmt9m.firebaseapp.com",
+  projectId: "keuanganku-fmt9m",
+  storageBucket: "keuanganku-fmt9m.firebasestorage.app",
+  messagingSenderId: "873635183256",
+  appId: "1:873635183256:web:c60a9d643c8e19fc88eeed"
+};
+
+
 import type { ReactNode } from 'react';
 import React, { createContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,6 +40,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+ // Initialize Firebase
+ const app = initializeApp(firebaseConfig);
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
