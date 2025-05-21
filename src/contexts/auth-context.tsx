@@ -61,11 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await new Promise(resolve => setTimeout(resolve, 1000));
     let mockUser: User | null = null;
 
-    if (email === 'user@example.com' && pass === 'password') {
+    if (email === 'user@example.com' && pass === 'tamu123') {
       mockUser = { id: '1', email: 'user@example.com', name: 'Pengguna Demo' };
     } else if (email === 'admin@gmail.com' && pass === 'admin123') {
       mockUser = { id: '2', email: 'admin@gmail.com', name: 'Pengguna Admin' };
-    } else if (email === 'swandarutirtasandhika1@gmail.com' && pass === 'password') {
+    } else if (email === 'swandarutirtasandhika1@gmail.com' && pass === 'tamu123') {
       mockUser = { id: '3', email: 'swandarutirtasandhika1@gmail.com', name: 'Swandaru T S' };
     }
 
