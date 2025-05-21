@@ -50,7 +50,7 @@ export function LoginForm() {
               <FormControl>
                 <Input 
                   type="email" 
-                  placeholder="pengguna@contoh.com" 
+                  placeholder="" 
                   {...field} 
                   data-ai-hint="email input"
                 />
@@ -68,7 +68,7 @@ export function LoginForm() {
               <FormControl>
                 <Input 
                   type="password" 
-                  placeholder="••••••••" 
+                  placeholder="masukan kata sandi" 
                   {...field} 
                   data-ai-hint="password input"
                 />

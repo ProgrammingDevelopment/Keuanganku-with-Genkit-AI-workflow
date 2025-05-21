@@ -1,6 +1,7 @@
 # Firebase Studio
 
 Ini adalah proyek awal NextJS di Firebase Studio.
+dengan menggunakan bantuan Genkit AI dan Framework NextJS sebagai arsitektur utama.
 
 Untuk memulai, lihat `src/app/page.tsx`.
 
@@ -13,8 +14,6 @@ Anda dapat masuk ke aplikasi menggunakan akun demo berikut:
 *   Kata Sandi: `admin123`
 
 **Akun Pengguna Tamu:**
-*   Email: `user@example.com`
+*   Email: `akuntamu@gmail.com`
 *   Kata Sandi: `tamu123`
 *   ---
-*   Email: `swandarutirtasandhika1@gmail.com`
-*   Kata Sandi: `tamu123`
