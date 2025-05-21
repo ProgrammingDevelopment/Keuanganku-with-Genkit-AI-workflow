@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Bitcoin, DollarSign, Zap, RefreshCw, Bot, Loader2, Search, Coins, BarChart3 } from "lucide-react"; // Removed TrendingUp as it was unused
+import { Bitcoin, DollarSign, Zap, RefreshCw, Bot, Loader2, Search, Coins, BarChart3 } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { analyzeCryptocurrency, type AnalyzeCryptocurrencyInput } from '@/ai/flows/analyze-cryptocurrency-flow';
-import { getArkhamChartAction, type GetArkhamChartActionResult } from './actions'; // Impor server action
-import { CryptoChart } from '@/components/kripto/crypto-chart'; // Impor komponen chart
+import { getArkhamChartAction, type GetArkhamChartActionResult } from './actions';
+import { CryptoChart } from '@/components/kripto/crypto-chart';
 import type { FormattedArkhamChartDataPoint, ArkhamChartDataPoint } from '@/services/arkham-service';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -20,9 +20,9 @@ interface CryptoDisplayInfo {
   id: string;
   name: string;
   symbol: string;
-  iconImage?: string; // Still available if real images are sourced later
-  placeholderBackgroundColor: string; // For colored placeholders
-  placeholderTextColor: string; // For text on placeholder
+  iconImage?: string;
+  placeholderBackgroundColor: string;
+  placeholderTextColor: string;
   fallbackIcon: React.ElementType;
   mockPrice: string;
   dataAiHint: string;
@@ -49,7 +49,7 @@ export default function KriptoPage() {
 
   const formatChartData = (data: ArkhamChartDataPoint[]): FormattedArkhamChartDataPoint[] => {
     return data.map(point => ({
-      date: format(new Date(point.timestamp), 'dd MMM', { locale: indonesiaLocale }), // Format tanggal pendek
+      date: format(new Date(point.timestamp), 'dd MMM', { locale: indonesiaLocale }),
       price: point.price,
     }));
   };
@@ -63,7 +63,6 @@ export default function KriptoPage() {
       return;
     }
     
-    // If it's a custom crypto, selectedCrypto might not have all fields like placeholderColor
     const currentSelected: CryptoDisplayInfo | { name: string, symbol: string, id?: string } = cryptoList.find(c => c.id === crypto.id) || { name: cryptoName, symbol: cryptoSymbol, id: crypto.id };
     setSelectedCrypto(currentSelected as CryptoDisplayInfo);
 
@@ -74,7 +73,6 @@ export default function KriptoPage() {
     setChartError(null);
 
     try {
-      // 1. Dapatkan Analisis AI
       const input: AnalyzeCryptocurrencyInput = { cryptocurrencyName: cryptoName };
       const result = await analyzeCryptocurrency(input);
       setAnalysisResult(result.analysis);
@@ -114,7 +112,7 @@ export default function KriptoPage() {
   
   const handleCustomCryptoSubmit = () => {
     if(customCryptoName.trim()){
-      const symbol = customCryptoName.toUpperCase().split(' ')[0]; // Simple symbol extraction
+      const symbol = customCryptoName.toUpperCase().split(' ')[0];
       handleAnalyzeAndChartCrypto({ name: customCryptoName, symbol: symbol });
     } else {
       toast({ title: "Nama Kripto Kosong", description: "Harap masukkan nama mata uang kripto.", variant: "destructive" });
@@ -133,7 +131,6 @@ export default function KriptoPage() {
         </div>
       </div>
 
-      {/* Predefined Crypto List */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         {cryptoList.map((crypto) => {
           const isLoadingCurrent = (isLoadingAnalysis || isLoadingChart) && selectedCrypto?.id === crypto.id;
@@ -152,7 +149,7 @@ export default function KriptoPage() {
                   width={36} 
                   height={36} 
                   className="rounded-full"
-                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/CCC/000.png?text=?`; }} // Generic fallback
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/CCC/000.png?text=?`; }}
                 />
               </CardHeader>
               <CardContent className="flex-grow p-4">
@@ -178,7 +175,6 @@ export default function KriptoPage() {
         })}
       </div>
       
-      {/* Custom Crypto Analysis */}
       <Card className="shadow-lg rounded-xl overflow-hidden">
         <CardHeader className="bg-card-foreground/5">
           <CardTitle className="flex items-center text-foreground">
@@ -193,7 +189,7 @@ export default function KriptoPage() {
               placeholder="cth: Dogecoin, Cardano, Polkadot"
               value={customCryptoName}
               onChange={(e) => setCustomCryptoName(e.target.value)}
-              className="flex-grow text-base sm:text-sm"
+              className="flex-grow"
               data-ai-hint="cryptocurrency name input"
               onKeyDown={(e) => e.key === 'Enter' && handleCustomCryptoSubmit()}
             />
@@ -213,7 +209,6 @@ export default function KriptoPage() {
         </CardContent>
       </Card>
 
-      {/* Analysis and Chart Display Area */}
       {(selectedCrypto) && (isLoadingAnalysis || analysisResult || isLoadingChart || chartData || chartError) && (
         <Card className="shadow-lg rounded-xl overflow-hidden">
           <CardHeader className="bg-card-foreground/5">
@@ -222,7 +217,6 @@ export default function KriptoPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 space-y-6">
-            {/* AI Analysis Section */}
             {isLoadingAnalysis && (
               <div className="flex flex-col items-center justify-center h-32 space-y-3">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -241,7 +235,6 @@ export default function KriptoPage() {
               </div>
             )}
             
-            {/* Chart Section */}
             {isLoadingChart && (
               <div className="flex flex-col items-center justify-center h-48 space-y-3">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -257,7 +250,7 @@ export default function KriptoPage() {
             {chartData && !isLoadingChart && !chartError && (
               <CryptoChart data={chartData} cryptoName={selectedCrypto?.name || "Kripto"} />
             )}
-             {!isLoadingChart && !chartData && !chartError && !isLoadingAnalysis && !analysisResult && ( // Improved condition to show initial message
+             {!isLoadingChart && !chartData && !chartError && !isLoadingAnalysis && !analysisResult && (
                 <div className="text-muted-foreground italic text-center py-10">
                   <BarChart3 className="mx-auto h-12 w-12 mb-4 text-muted-foreground/50" />
                   <p>Pilih mata uang kripto atau masukkan nama di atas untuk melihat analisis dan grafik harga.</p>
